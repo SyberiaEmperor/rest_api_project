@@ -7,6 +7,7 @@ import (
 
 type Authorization interface {
 	CreateUser(user restwebprj.User) (int, error)
+	GetUser(username, password string) (restwebprj.User, error)
 }
 
 type TodoList interface {
