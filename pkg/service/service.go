@@ -1,8 +1,12 @@
 package service
 
-import "github.com/SyberiaEmperor/rest_web_prj/pkg/repository"
+import (
+	restwebprj "github.com/SyberiaEmperor/rest_web_prj"
+	"github.com/SyberiaEmperor/rest_web_prj/pkg/repository"
+)
 
 type Authorization interface {
+	CreateUser(user restwebprj.User) (int, error)
 }
 
 type TodoList interface {
@@ -18,5 +22,7 @@ type Service struct {
 }
 
 func NewService(repos *repository.Repository) *Service {
-	return &Service{}
+	return &Service{
+		Authorization: NewAuthService(repos.Authorization),
+	}
 }
