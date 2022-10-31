@@ -2,6 +2,8 @@ package main
 
 import (
 	"os"
+	"os/signal"
+	"syscall"
 
 	restwebprj "github.com/SyberiaEmperor/rest_web_prj"
 	"github.com/SyberiaEmperor/rest_web_prj/pkg/handler"
@@ -42,9 +44,19 @@ func main() {
 	handlers := handler.NewHandler(services)
 	srv := new(restwebprj.Server)
 
-	if err := srv.Run(viper.GetString("port"), handlers.InitRoutes()); err != nil {
-		logrus.Fatalf("error occured while running http server: %s", err.Error())
-	}
+	go func() {
+		if err := srv.Run(viper.GetString("port"), handlers.InitRoutes()); err != nil {
+			logrus.Fatalf("error occured while running http server: %s", err.Error())
+		}
+	}()
+
+	logrus.Print("Server started")
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
+	<-quit
+
+	logrus.Print("Server stopped")
 }
 
 func initConfig() error {
